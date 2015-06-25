@@ -303,6 +303,7 @@ end
               update_data_from_sina(ta,class_name,po.peroid,show_log) if po.time_up?(t) 
             else
                if po.trading_time_flag
+                 class_name = "Lastest_records_"+(po.peroid/60).to_s+"m"
                  update_data_from_sina(ta,class_name,po.peroid,show_log)
                  puts "Trade is over, fetch last #{po.peroid/60}m data. " 
                end
