@@ -215,7 +215,7 @@ end
                 
                  system ("say #{get_sound(peroid,:buy,h[:code],price)}") if peroid > 60
 
-                 puts "at #{h:date} #{h[:time]} #{peroid/60}m  diff>dea , #{get_name_str(h[:code])} suggest to buy  at #{price}" if show_log
+                 puts "at #{h[:date]} #{h[:time]} #{peroid/60}m  diff>dea , #{get_name_str(h[:code])} suggest to buy  at #{price}" if show_log
                  #$log.push({:action=>:buy,:time=>h[:time],:code=>h[:code],:price=>price})
                  #sl.push("#{sid},'#{h[:code]}',#{h[:date]},#{h[:time]},'buy',#{price}")
                  sl.push("#{sid},'#{h[:code]}','#{h[:date].to_s}','#{h[:time].to_s}','#{peroid}','buy','#{price}'")
@@ -226,7 +226,7 @@ end
   
                  system ("say #{get_sound(peroid,:sell,h[:code],price)}") if peroid > 60
 
-                 puts "at  #{h:date} #{h[:time]} #{peroid/60}m diff<dea , #{get_name_str(h[:code])} suggest to sell at #{price}" if show_log
+                 puts "at  #{h[:date]} #{h[:time]} #{peroid/60}m diff<dea , #{get_name_str(h[:code])} suggest to sell at #{price}" if show_log
                  #$log.push({:action=>:sell,:time=>h[:time],:code=>h[:code],:price=>price})
                  sl.push("#{sid},'#{h[:code]}','#{h[:date].to_s}','#{h[:time].to_s}','#{peroid}','sell','#{price}'")
                  sid += 1
