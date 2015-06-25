@@ -262,13 +262,16 @@ end
     action = "买"
     action = "卖" if direction == :sell 
 
-    name = Names.get_name(code)
+    #name = Names.get_name(code)
+    name == nil
     name = "中证500指数" if (code=='399905') 
     name = "沪深300指数" if (code=='000300') 
     name = "上证50指数" if (code=='000016') and (price > 1000.0) #这个代码和股票代码重叠，根据价格大于1000决定
  
 
-    return "根据#{peroid/60}分钟指标分析，可以#{action}#{name}了" 
+    return "根据#{peroid/60}分钟指标分析，可以#{action}#{name}了" if name!=nil
+    return ""
+
   end
 
   def get_name_str(code)
