@@ -130,7 +130,9 @@ def show_history(ta,two_way=false,show_macd=false)
 
       #p last[:last_action].to_s
       if (last[:last_action] == :buy) or (two_way)
+        roe = -roe if (last[:last_action] == :sell) 
         total_roe = total_roe*(1+roe/100)
+
                    #p total_roe
         puts "#{last[:date].to_s}  price=#{price}, last roe=#{format_roe(roe)}%, total roe=#{format_roe(total_roe*100)}%" 
       end

@@ -152,7 +152,7 @@ end
         t1 = Time.now 
         all=fetch_data_from_sina(ta)
         t2 = Time.now
-        puts "#{t1.strftime("%y-%m-%d %H:%M:%S")} fetching all data from sina for #{peroid/60}m takes #{t2-t1} seconds."
+        puts "#{t1.getlocal("+08:00").strftime("%y-%m-%d %H:%M:%S")} fetching all data from sina for #{peroid/60}m takes #{t2-t1} seconds."
 
         #class_name = "Lastest_records_"+(peroid/60).to_s+"m" 
         #p class_name
