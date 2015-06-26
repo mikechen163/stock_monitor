@@ -213,7 +213,7 @@ end
 
                if (diff > dea) and (rec['diff']< rec['dea'])
                 
-                 system ("say #{get_sound(peroid,:buy,h[:code],price)}") if peroid > 60
+                 system ("say #{get_sound(peroid,:buy,h[:code],price)}") if (peroid > 60) 
 
                  puts "at #{h[:date]} #{h[:time]} #{peroid/60}m  diff>dea , #{get_name_str(h[:code])} suggest to buy  at #{price}" if show_log
                  #$log.push({:action=>:buy,:time=>h[:time],:code=>h[:code],:price=>price})
@@ -226,7 +226,7 @@ end
   
                  system ("say #{get_sound(peroid,:sell,h[:code],price)}") if peroid > 60
 
-                 puts "at  #{h[:date]} #{h[:time]} #{peroid/60}m diff<dea , #{get_name_str(h[:code])} suggest to sell at #{price}" if show_log
+                 puts "at #{h[:date]} #{h[:time]} #{peroid/60}m  diff<dea , #{get_name_str(h[:code])} suggest to sell at #{price}" if show_log
                  #$log.push({:action=>:sell,:time=>h[:time],:code=>h[:code],:price=>price})
                  sl.push("#{sid},'#{h[:code]}','#{h[:date].to_s}','#{h[:time].to_s}','#{peroid}','sell','#{price}'")
                  sid += 1
@@ -259,18 +259,20 @@ end
   end
 
   def get_sound(peroid,direction,code,price)
-    action = "买"
-    action = "卖" if direction == :sell 
+    action = "买入"
+    action = "卖出" if direction == :sell 
 
+    #p code
     #name = Names.get_name(code)
     name = nil
     name = "中证500指数" if (code=='399905') 
     name = "沪深300指数" if (code=='000300') 
     name = "上证50指数" if (code=='000016') and (price > 1000.0) #这个代码和股票代码重叠，根据价格大于1000决定
  
-
+    #p name if name!=nil
     return "根据#{peroid/60}分钟指标分析，可以#{action}#{name}了" if name!=nil
-    return ""
+    name = Names.get_name(code)
+    return "#{action}#{name}"
 
   end
 
