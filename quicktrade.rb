@@ -193,9 +193,9 @@ end
 
           else
              if trading_time_flag
-                 update_data_from_sina(ta,"Lastest_records",seconds,show_log)
-                 last_t = t
-                 puts "Trade is over, fetch last #{seconds/60}m data. " 
+                 # update_data_from_sina(ta,"Lastest_records",seconds,show_log)
+                 # last_t = t
+                 puts "Trade is over for  #{seconds/60}m . " 
               end
 
             trading_time_flag = false
