@@ -12,7 +12,7 @@ module Network_stock_interface
       return true
     else
       puts "not trading day, sleeping 1 hour..."
-      sleep(3600)
+      sleep(300)
       return false
     end
 
