@@ -106,21 +106,21 @@ def load_name_into_db(fname)
 end
 
 
-# def get_name_list(fname)
-#   ta = []
-#   File.open(fname) do |file|
+def get_name_list(fname)
+  ta = []
+  File.open(fname) do |file|
 
      
-#       file.each_line do |line|
-#         code = line.scan(/\([0-9]+\)/)[0][1..6]
-#         ta.push( code)
+      file.each_line do |line|
+        code = line.scan(/\([0-9]+\)/)[0][1..6]
+        ta.push( code)
         
-#         #break
-#       end
-#   end
+        #break
+      end
+  end
 
-#   return ta
-# end
+  return ta
+end
 
 
 

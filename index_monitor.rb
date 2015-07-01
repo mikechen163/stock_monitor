@@ -265,8 +265,10 @@ end
       #seconds = ARGV[ARGV.index(ele)+2].to_i
       #seconds = 60 if seconds==0
 
-      #ta = get_name_list("all_name.txt")
-      ta=['sz399905','sh000300','sh000016']
+      ta = get_name_list("mylist.txt")
+      ['sz399905','sh000300','sh000016'].each{|c| ta.unshift(c)}
+
+      #p ta
 
       last_t = Time.now.gmtime #utc time
        date = last_t.to_date
