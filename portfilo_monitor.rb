@@ -285,7 +285,7 @@ end
       show_log = true
       #show_log = true if seconds >= 300
 
-      pl = [1,5,15,30,60].map{|x| Peroid.new(x*60)}
+      pl = [5,15,30,60].map{|x| Peroid.new(x*60)}
       #p pl
       #return 
       while (true)
