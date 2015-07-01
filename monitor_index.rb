@@ -2,7 +2,7 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__)) unless $LOAD_PATH.include?(File.dirname(__FILE__))  
 require 'time'
 
-require 'rupy'
+#require 'rupy'
 require 'csv'
 
 require 'tushare_interface'
@@ -46,13 +46,17 @@ def show_history(ta,two_way=false,show_macd=false)
      # File.open(fname,:encoding => 'gbk') do |file|       
      #    file.each_line do |line|
           len = ta.length
-          ta[1..len-1].each do |na|
+          #ta[1..len-1].each do |na| 
+          ta.each do |na|
               #p na
               #day_num = Time.new(line[6..9].to_i,line[0..1].to_i,line[3..4].to_i,0,0,0).to_date
               day_num = na[0]
               #date_list[i].push(day_num)
                #td,open,high,low,close,volume,amount = line.split(/\t/)
-               close = na[3]
+               #close = na[3]
+               close=na[1]["close"]
+              
+
                h=Hash.new
                h[:date] = day_num
                h[:price] = close.to_f
@@ -94,7 +98,7 @@ def show_history(ta,two_way=false,show_macd=false)
                    roe = -(price-h[:last_price])/h[:last_price]*100
                    if two_way
                      total_roe = total_roe*(1+roe/100)
-                     puts "#{h[:date].to_s} #{ts} diff>dea, suggest to buy #{price}, last roe=#{format_roe(roe)}%, total roe=#{format_roe(total_roe*100)}%" 
+                     puts "#{h[:date].to_s} #{ts} diff>dea, sdSxuggest to buy #{price}, last roe=#{format_roe(roe)}%, total roe=#{format_roe(total_roe*100)}%" 
                    else
                     puts "#{h[:date].to_s} #{ts} diff>dea, suggest to buy #{price}"         
                    end
@@ -153,7 +157,7 @@ def print_help
 end
 #main start here...
 
- Rupy.start
+ #Rupy.start
  if ARGV.length != 0
  
     ARGV.each do |ele|       
@@ -200,5 +204,5 @@ end
   end
 end
 
-Rupy.stop
+#Rupy.stop
 

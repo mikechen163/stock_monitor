@@ -1,7 +1,7 @@
 require 'rupy'
 require 'csv'
-# require 'json'
-# require 'pp'
+ require 'json'
+ require 'pp'
 
 
 
@@ -9,7 +9,8 @@ class Tushare
 
   def initialize()
   
-  	@ts=Rupy.import("tushare")
+  	#@ts=Rupy.import("tushare")
+
 
   end
 
@@ -18,23 +19,30 @@ class Tushare
      return CSV.parse(s)
   end
 
+  #  def get_h_data(code,start_date,end_date)
+  #    r = @ts.get_h_data(code,start_date,end_date)
+  #    return pandas_to_arr(r)
+  # end
+
+  #  def get_history_data(code,start_date,end_date,kcode='D')
+  #    r = @ts.get_hist_data(code,start_date,end_date,kcode)
+  #    return pandas_to_arr(r)
+  # end
+
   def get_h_data(code,start_date,end_date)
-  	 r = @ts.get_h_data(code,start_date,end_date)
-     #s=r.to_json('records').to_s
-     #p s
-     #return JSON.parse(s)
-     
-     return pandas_to_arr(r)
+     s = "import tushare as ts; r=ts.get_h_data('#{code}','#{start_date}','#{end_date}').to_json(date_format='iso',orient='index');print r"
+     ns = `python -c "#{s}"`
+     return JSON.parse(ns)
   end
 
    def get_history_data(code,start_date,end_date,kcode='D')
-     r = @ts.get_hist_data(code,start_date,end_date,kcode)
-     #s=r.to_json('records').to_s
-     #p s
-     #return JSON.parse(s)
-     
-     return pandas_to_arr(r)
-  end
+     #r = @ts.get_hist_data(code,start_date,end_date,kcode)
+
+     s = "import tushare as ts; r=ts.get_hist_data('#{code}','#{start_date}','#{end_date}','#{kcode}').to_json(date_format='iso',orient='index');print r"
+     ns = `python -c "#{s}"`
+     #pp ns
+     return JSON.parse(ns)
+   end
 
   def arr_to_hash(ta)
 
