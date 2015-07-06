@@ -4,17 +4,22 @@ require 'open-uri'
 module Network_stock_interface
 
   def today_is_trading?
-    ta=get_list_data_from_sina(['399905'])
-    #p ta[0][:date]
-    today = Time.now.to_date
-    #p today.to_s
-    if ta[0][:date] == today.to_s
-      return true
-    else
-      puts "not trading day, sleeping 1 hour..."
-      sleep(300)
-      return false
-    end
+    ok=false
+    today = Time.now.localtime("+08:00").to_date.to_s
+
+    #while not ok
+        ta=get_list_data_from_sina(['399905'])
+        #p ta[0][:date]
+        #today = Time.now.to_date
+        #p today.to_s
+        if ta[0][:date] == today
+          return true
+        else
+          #puts "not trading day, sleeping 60 seconds ..."
+          sleep(60)
+          return false
+        end
+    #end
 
   end
 
