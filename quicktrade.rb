@@ -165,6 +165,14 @@ end
       show_log = true if seconds >= 300
       while (true)
         t = Time.now.gmtime
+
+        if (t-t2) > 24*3600
+           date = t.to_date
+           t2 = Time.new(date.year,date.month,date.day,9,30,0,"+08:00").gmtime
+           t3 = Time.new(date.year,date.month,date.day,11,30,59,"+08:00").gmtime
+           t4 = Time.new(date.year,date.month,date.day,13,0,0,"+08:00").gmtime
+           t5 = Time.new(date.year,date.month,date.day,15,0,59,"+08:00").gmtime
+        end
         #if (t-last_t)>=seconds
          # last_t = t
 
