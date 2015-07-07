@@ -294,7 +294,7 @@ end
         #if (t-last_t)>=seconds
          # last_t = t
         #
-        if (t-t2) > 24*3600
+        if (t-t2) > 3600
            date = t.to_date
            t2 = Time.new(date.year,date.month,date.day,9,30,0,"+08:00").gmtime
            t3 = Time.new(date.year,date.month,date.day,11,30,59,"+08:00").gmtime
