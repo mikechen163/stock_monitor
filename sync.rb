@@ -64,6 +64,13 @@ def copy_dir(dir1,dir2)
 	      	FileUtils.cp path,np
 	      else
 	      	#p np
+	      	size1=FileTest.size(path)
+	      	size2=FileTest.size(np)
+	      	if size1!=size2
+	      	  p "#{ns(path,dir1)} SIZE is different, diff=#{size2-size1}" 
+	       	  FileUtils.cp path,np
+	        end
+            
 	      end
 	  	#p path
 	    #total_size += FileTest.size(path)
