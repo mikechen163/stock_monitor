@@ -46,9 +46,10 @@ def copy_dir(dir1,dir2)
 	    if File.basename(path)[0] == '.'
 	      Find.prune       # Don't look any further into this directory.
 	    else
-	      #p path
+	      #all directory branch
+	      #p path 
 	      np= dir2+ns(path,dir1)
-	      if !Dir.exist?(np)
+	      if !Dir.exist?(np) #path not found in dest directory,create it.
 	      	p "creating new directory: #{np}"
 	      	Dir.mkdir(np)
 	      else
@@ -58,12 +59,14 @@ def copy_dir(dir1,dir2)
 	      next
 	    end
 	  else
+	  	  # all file branch
 	  	  np= dir2+ns(path,dir1)
-	  	  if !File.exist?(np)
+	  	  if !File.exist?(np) #file not found ,copy source file to dest directory
 	      	p "copy file : #{np}"
 	      	FileUtils.cp path,np
 	      else
 	      	#p np
+	      	#file exist, check file size is identical ?
 	      	size1=FileTest.size(path)
 	      	size2=FileTest.size(np)
 	      	if size1!=size2
