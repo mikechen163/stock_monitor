@@ -43,5 +43,6 @@ def walk(dir1,level=0,print_level=3)
    return totalsize
 end
 
+#travel directory and count all file size .
 walk(ARGV[0],0,ARGV[1].to_i) if FileTest.directory?(ARGV[0]) 
 

@@ -311,6 +311,8 @@ end
     end
 
      if ele == '-z'
+       db_name = "name.db"
+      connect_db(db_name)
       code = ARGV[ARGV.index(ele)+1]
       kcode = ARGV[ARGV.index(ele)+2]
       kcode = '60' if kcode==nil
