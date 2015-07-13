@@ -1,6 +1,36 @@
 #monitor daily macd index  中文
 $LOAD_PATH.unshift(File.dirname(__FILE__)) unless $LOAD_PATH.include?(File.dirname(__FILE__))  
 require 'time'
+require 'db_interface'
+require 'active_record'
+
+
+include Db_interface
+
+sa = [ 
+
+          "DROP TABLE name",
+          "create table  name ( id integer primary key,
+                code                        varchar(6),    
+                name                        varchar(20),
+                market                      varchar(2)
+
+               )"
+
+   ]
+
+class Names < ActiveRecord::Base
+  def self.table_name() "name" end
+   def self.get_name(code)
+     rec=self.where(code: "#{code}")
+     return rec[0]['name'] if rec!=nil
+     return "unknown"
+  end 
+
+  def get_name_list
+     self.all.map{|rec| rec['market']+rec['code']}    
+  end
+end
 
 #require 'rupy'
 require 'csv'
@@ -23,7 +53,7 @@ def ema(x,n,p)
   return (x*2+(n-1)*p)/(n+1)
 end
 
-def show_history(ta,two_way=false,show_macd=false)
+def show_history(ta,two_way=false,show_macd=false,func_mode=false)
   #p dir
   #cl_list=["SH601988.txt","SH601398.txt","SH601328.txt"]
   #cl_list = ["SZ399905.txt","SH000300.txt"]
@@ -88,6 +118,7 @@ def show_history(ta,two_way=false,show_macd=false)
 
                 
                 h[:last_price]  = last[:last_price]
+                h[:last_date]  = last[:last_date]
                 h[:last_action] = last[:last_action]
 
                 ts =""
@@ -98,10 +129,11 @@ def show_history(ta,two_way=false,show_macd=false)
                    roe = -(price-h[:last_price])/h[:last_price]*100
                    if two_way
                      total_roe = total_roe*(1+roe/100)
-                     puts "#{h[:date].to_s} #{ts} diff>dea, sdSxuggest to buy #{price}, last roe=#{format_roe(roe)}%, total roe=#{format_roe(total_roe*100)}%" 
+                     puts "#{h[:date].to_s} #{ts} diff>dea, suggest to buy #{price}, last roe=#{format_roe(roe)}%, total roe=#{format_roe(total_roe*100)}%" if not func_mode
                    else
-                    puts "#{h[:date].to_s} #{ts} diff>dea, suggest to buy #{price}"         
+                    puts "#{h[:date].to_s} #{ts} diff>dea, suggest to buy #{price}"  if not func_mode       
                    end
+                   h[:last_date] = h[:date]
                    h[:last_price] = price
                    h[:last_action] = :buy
                  end
@@ -110,9 +142,10 @@ def show_history(ta,two_way=false,show_macd=false)
                    roe = (price-h[:last_price])/h[:last_price]*100
                    total_roe = total_roe*(1+roe/100)
                    #p total_roe
-                   puts "#{h[:date].to_s} #{ts} diff<dea, suggest to sell #{price}, last roe=#{format_roe(roe)}%, total roe=#{format_roe(total_roe*100)}%" 
+                   puts "#{h[:date].to_s} #{ts} diff<dea, suggest to sell #{price}, last roe=#{format_roe(roe)}%, total roe=#{format_roe(total_roe*100)}%" if not func_mode
                    h[:last_price] = price
                    h[:last_action] = :sell
+                   h[:last_date] = h[:date]
                  end
 
                
@@ -138,7 +171,7 @@ def show_history(ta,two_way=false,show_macd=false)
         total_roe = total_roe*(1+roe/100)
 
                    #p total_roe
-        puts "#{last[:date].to_s}  price=#{price}, last roe=#{format_roe(roe)}%, total roe=#{format_roe(total_roe*100)}%" 
+        puts "#{last[:date].to_s}  price=#{price}, last roe=#{format_roe(roe)}%, total roe=#{format_roe(total_roe*100)}%" if not func_mode
       end
                   
 
@@ -146,9 +179,69 @@ def show_history(ta,two_way=false,show_macd=false)
   #end
 
   #return date_list[0]
+  return last[:last_action],last[:last_date],last[:last_price],roe
 end
 
 
+def check_market_state()
+      codelist  = ['399905','399300']
+      start_date = '2013-01-01'
+      end_date  = '2015-12-31'
+      kcode_list = ['30','60','D','W']
+
+      t=Tushare.new
+      
+      kcode_list.each do |kcode|
+        codelist.each do |code|
+          ta=t.get_history_data(code,start_date,end_date,kcode)
+          #ta.each {|h| p h}
+          $ema_p=[12,26,9]
+          #$ema_p=[6,30,9] if ema==1
+          action,date,price,roe = show_history(ta,false,false,true)
+          puts "#{code} #{kcode} last_action=#{action.to_s} on #{date.to_s} at #{price} roe=#{format_roe(roe)}%"
+        end
+      end
+end
+
+def check_portfilo()
+      codelist  = ['002202','002001','600216','000869','600597','601139','600499','600315','600406','600352','600585','002765','300207','000568']
+      start_date = '2013-01-01'
+      end_date  = '2015-12-31'
+      kcode_list = ['60']
+
+      t=Tushare.new
+      
+      kcode_list.each do |kcode|
+        codelist.each do |code|
+          ta=t.get_history_data(code,start_date,end_date,kcode)
+          #ta.each {|h| p h}
+          $ema_p=[12,26,9]
+          #$ema_p=[6,30,9] if ema==1
+          action,date,price,roe = show_history(ta,false,false,true)
+          puts "#{Names.get_name(code)}(#{code}) #{kcode} last_action=#{action.to_s} on #{date.to_s} at #{price} roe=#{format_roe(roe)}%"
+        end
+      end
+end
+
+def check_zz500(code,kcode)
+      #codelist  = ['399905']
+      start_date = '2013-01-01'
+      end_date  = '2015-12-31'
+      #kcode_list = ['60']
+
+      t=Tushare.new
+      
+      #kcode_list.each do |kcode|
+      #  codelist.each do |code|
+          ta=t.get_history_data(code,start_date,end_date,kcode)
+          #ta.each {|h| p h}
+          $ema_p=[12,26,9]
+          #$ema_p=[6,30,9] if ema==1
+          action,date,price,roe = show_history(ta,false,false,false)
+          #puts "#{code} #{kcode} last_action=#{action.to_s} on #{date.to_s} at #{price} roe=#{format_roe(roe)}%"
+       # end
+     # end
+end
 
 def print_help
     puts "This Tool is used to show analysis daily macd for given stock "
@@ -165,6 +258,14 @@ end
       print_help
       exit 
      end 
+
+       if ele == '-d'
+      db_name = "name.db"#ARGV[ARGV.index(ele)+1]
+      connect_db(db_name)
+      
+      create_db(sa)
+      load_name_into_db("all_name.txt")
+    end
 
     #  if ele == '-c'
     #   dir = ARGV[ARGV.index(ele)+1]
@@ -198,6 +299,23 @@ end
       #$ema_p=[6,30,9] if ema==1
       show_history(ta,false,false)
 
+    end
+
+    if ele == '-c'
+      check_market_state 
+    end
+    if ele == '-p'
+       db_name = "name.db"
+      connect_db(db_name)
+      check_portfilo
+    end
+
+     if ele == '-z'
+      code = ARGV[ARGV.index(ele)+1]
+      kcode = ARGV[ARGV.index(ele)+2]
+      kcode = '60' if kcode==nil
+
+      check_zz500(code,kcode)
     end
 
 
