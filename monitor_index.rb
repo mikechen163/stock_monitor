@@ -203,15 +203,19 @@ def check_market_state()
       end
 end
 
-def check_portfilo()
-      codelist  = ['002202','002001','600216','000869','600597','601139','600499','600315','600406','600352','600585','002765','300207','000568']
+def check_portfilo(kcode)
+      #codelist  = ['002202','002001','600216','000869','600597','601139','600499','600315','600406','600352','600585','002765','300207','000568']
+
+      codelist = get_name_list("mylist.txt")
+      ['399905','399300'].each{|c| codelist.unshift(c)}
+
       start_date = '2013-01-01'
       end_date  = '2015-12-31'
-      kcode_list = ['60']
+      #kcode_list = ['60']
 
       t=Tushare.new
       
-      kcode_list.each do |kcode|
+      #kcode_list.each do |kcode|
         codelist.each do |code|
           ta=t.get_history_data(code,start_date,end_date,kcode)
           #ta.each {|h| p h}
@@ -220,7 +224,7 @@ def check_portfilo()
           action,date,price,roe = show_history(ta,false,false,true)
           puts "#{Names.get_name(code)}(#{code}) #{kcode} last_action=#{action.to_s} on #{date.to_s} at #{price} roe=#{format_roe(roe)}%"
         end
-      end
+      #end
 end
 
 def check_zz500(code,kcode)
@@ -245,7 +249,11 @@ end
 
 def print_help
     puts "This Tool is used to show analysis daily macd for given stock "
-    puts "-c [dir] [code] analysis code using dir"
+    puts "-d  create stock name database"
+    puts "-n  [code] [start_date] [end_date] [kcode]"
+    puts "-c  check market state" 
+    puts "-p [kcode]  check portfilo for given kcode" 
+    puts "-z [code] [kcode]  check code kcode" 
     puts "-h              This help"    
 end
 #main start here...
@@ -307,7 +315,8 @@ end
     if ele == '-p'
        db_name = "name.db"
       connect_db(db_name)
-      check_portfilo
+      kcode = ARGV[ARGV.index(ele)+1]
+      check_portfilo(kcode)
     end
 
      if ele == '-z'
