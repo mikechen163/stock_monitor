@@ -3,6 +3,7 @@ $LOAD_PATH.unshift(File.dirname(__FILE__)) unless $LOAD_PATH.include?(File.dirna
 require 'time'
 require 'db_interface'
 require 'active_record'
+require 'time'
 
 
 include Db_interface
@@ -339,14 +340,46 @@ end
     end
 
     if ele == '-c'
-      check_market_state 
+      
+      last_t= Time.now
+      check_market_state
+      # while true
+      #   t = Time.now
+      #   if (t-last_t) > 1800
+      #     last_t = t
+      #     check_market_state
+      #     #last_t = t
+      #   end
+
+      #   sleep(60)
+      # end
+
+      
     end
     if ele == '-p'
       #  db_name = "name.db"
       # connect_db(db_name)
       kcode = ARGV[ARGV.index(ele)+1]
       kcode = '60' if kcode==nil
+
+      peroid = kcode.to_i*60
+
+      #peroid = 3600 if kcode == 'D'
+      #peroid = 3600 if kcode == 'W'
+      peroid = 3600 if peroid == 0
+
+      last_t= Time.now
       check_portfilo(kcode)
+      # while true
+      #   t = Time.now
+      #   if (t-last_t) > peroid
+      #     last_t = t
+      #     check_portfilo(kcode)
+      #     #last_t = t
+      #   end
+
+      # sleep(60)
+      # end
     end
 
      if ele == '-z'
