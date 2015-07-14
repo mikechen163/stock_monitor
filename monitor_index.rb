@@ -85,6 +85,11 @@ def show_history(ta,two_way=false,show_macd=false,func_mode=false)
                #td,open,high,low,close,volume,amount = line.split(/\t/)
                #close = na[3]
                close=na[1]["close"]
+               ma20= na[1]['ma20']
+
+               #puts "#{day_num.to_s} close=#{close} ma20=#{ma20} above_ma20=#{(close>ma20).to_s}" if not func_mode
+
+
               
 
                h=Hash.new
@@ -99,11 +104,22 @@ def show_history(ta,two_way=false,show_macd=false,func_mode=false)
                  h[:macd]=0.0
                  h[:last_price] = close.to_f
                  h[:last_action] = :null
+                 h[:above_ma20] = (close>ma20)
               
 
                else
 
                 last=arr[i][j-1]
+               
+                h[:above_ma20] = (close>ma20)
+                if h[:above_ma20] != last[:above_ma20]
+                  sell_out = ""
+                  sell_out = "SELL OUT!!!!!!!!!!!!" if h[:above_ma20] == false
+                  puts "#{day_num.to_s}  close=#{close} ma20=#{ma20} above_ma20=#{(close>ma20).to_s} #{sell_out} " if not func_mode
+                end
+
+
+
                 #p last
                 price = close.to_f
                 #h[:ema_short]=last[:ema_short]*11.0/13 + 2.0/13*price
@@ -194,11 +210,15 @@ def check_market_state()
       kcode_list.each do |kcode|
         codelist.each do |code|
           ta=t.get_history_data(code,start_date,end_date,kcode)
+          last=(ta.to_a)[ta.length-1][1]
+         # p last
+          above_ma20=false
+          above_ma20 = true if last['ma20'] < last['close']
           #ta.each {|h| p h}
-          $ema_p=[12,26,9]
+          #$ema_p=[12,26,9]
           #$ema_p=[6,30,9] if ema==1
           action,date,price,roe = show_history(ta,false,false,true)
-          puts "#{code} #{kcode} last_action=#{action.to_s} on #{date.to_s} at #{price} roe=#{format_roe(roe)}%"
+          puts "#{Names.get_name(code)}(#{code}) #{kcode} last_action=#{action.to_s} on #{date.to_s} at #{price} roe=#{format_roe(roe)}% above_ma20=#{above_ma20.to_s}"
         end
       end
 end
@@ -218,11 +238,16 @@ def check_portfilo(kcode)
       #kcode_list.each do |kcode|
         codelist.each do |code|
           ta=t.get_history_data(code,start_date,end_date,kcode)
+          #len=ta.length
+          last=(ta.to_a)[ta.length-1][1]
+         # p last
+          above_ma20=false
+          above_ma20 = true if last['ma20'] < last['close']
           #ta.each {|h| p h}
-          $ema_p=[12,26,9]
+          #$ema_p=[12,26,9]
           #$ema_p=[6,30,9] if ema==1
           action,date,price,roe = show_history(ta,false,false,true)
-          puts "#{Names.get_name(code)}(#{code}) #{kcode} last_action=#{action.to_s} on #{date.to_s} at #{price} roe=#{format_roe(roe)}%"
+          puts "#{Names.get_name(code)}(#{code}) #{kcode} last_action=#{action.to_s} on #{date.to_s} at #{price} roe=#{format_roe(roe)}%, above_ma20=#{above_ma20.to_s}"
         end
       #end
 end
@@ -239,7 +264,7 @@ def check_zz500(code,kcode)
       #  codelist.each do |code|
           ta=t.get_history_data(code,start_date,end_date,kcode)
           #ta.each {|h| p h}
-          $ema_p=[12,26,9]
+          #$ema_p=[12,26,9]
           #$ema_p=[6,30,9] if ema==1
           action,date,price,roe = show_history(ta,false,false,false)
           #puts "#{code} #{kcode} last_action=#{action.to_s} on #{date.to_s} at #{price} roe=#{format_roe(roe)}%"
@@ -258,6 +283,10 @@ def print_help
 end
 #main start here...
 
+
+ $ema_p=[12,26,9]
+ db_name = "name.db"
+ connect_db(db_name)
  #Rupy.start
  if ARGV.length != 0
  
@@ -268,8 +297,8 @@ end
      end 
 
        if ele == '-d'
-      db_name = "name.db"#ARGV[ARGV.index(ele)+1]
-      connect_db(db_name)
+      # db_name = "name.db"#ARGV[ARGV.index(ele)+1]
+      # connect_db(db_name)
       
       create_db(sa)
       load_name_into_db("all_name.txt")
@@ -303,7 +332,7 @@ end
       t=Tushare.new
       ta=t.get_history_data(code,start_date,end_date,kcode)
       #ta.each {|h| p h}
-      $ema_p=[12,26,9]
+      #$ema_p=[12,26,9]
       #$ema_p=[6,30,9] if ema==1
       show_history(ta,false,false)
 
@@ -313,15 +342,16 @@ end
       check_market_state 
     end
     if ele == '-p'
-       db_name = "name.db"
-      connect_db(db_name)
+      #  db_name = "name.db"
+      # connect_db(db_name)
       kcode = ARGV[ARGV.index(ele)+1]
+      kcode = '60' if kcode==nil
       check_portfilo(kcode)
     end
 
      if ele == '-z'
-       db_name = "name.db"
-      connect_db(db_name)
+      #  db_name = "name.db"
+      # connect_db(db_name)
       code = ARGV[ARGV.index(ele)+1]
       kcode = ARGV[ARGV.index(ele)+2]
       kcode = '60' if kcode==nil
