@@ -204,7 +204,7 @@ def check_market_state()
       codelist  = ['399905','399300']
       start_date = '2013-01-01'
       end_date  = '2015-12-31'
-      kcode_list = ['30','60','D','W']
+      kcode_list = ['15','30','60','D','W']
 
       t=Tushare.new
       
@@ -224,31 +224,55 @@ def check_market_state()
       end
 end
 
-def check_portfilo(kcode)
+def check_portfilo(kcode,monitor_ma20=false)
       #codelist  = ['002202','002001','600216','000869','600597','601139','600499','600315','600406','600352','600585','002765','300207','000568']
 
       codelist = get_name_list("mylist.txt")
       ['399905','399300'].each{|c| codelist.unshift(c)}
 
+      today = Time.now.to_date.to_s
+
       start_date = '2013-01-01'
-      end_date  = '2015-12-31'
+      end_date  = (Time.now.to_date+1).to_s
+      #p end_date
+
+      if monitor_ma20
+        #start_date = (Time.now.to_date-10).to_s
+        start_date = today
+      end
       #kcode_list = ['60']
 
       t=Tushare.new
       
       #kcode_list.each do |kcode|
+      #
+      puts "-----------------------------------------------------------------------------------------------"
         codelist.each do |code|
           ta=t.get_history_data(code,start_date,end_date,kcode)
+          next if ta.length ==0
+          #ta.each {|h| p h}
           #len=ta.length
           last=(ta.to_a)[ta.length-1][1]
+          date= (ta.to_a)[ta.length-1][0][0..9]
+          time_str = (ta.to_a)[ta.length-1][0]
+          next if date != today #skip is today have no data
          # p last
           above_ma20=false
           above_ma20 = true if last['ma20'] < last['close']
           #ta.each {|h| p h}
           #$ema_p=[12,26,9]
           #$ema_p=[6,30,9] if ema==1
-          action,date,price,roe = show_history(ta,false,false,true)
-          puts "#{Names.get_name(code)}(#{code}) #{kcode} last_action=#{action.to_s} on #{date.to_s} at #{price} roe=#{format_roe(roe)}%, above_ma20=#{above_ma20.to_s}"
+          #
+          if not monitor_ma20
+            action,date,price,roe = show_history(ta,false,false,true)
+            puts "#{Names.get_name(code)}(#{code}) #{kcode} last_action=#{action.to_s} on #{date.to_s} at #{price} roe=#{format_eroe(roe)}%, above_ma20=#{above_ma20.to_s}"
+          else
+            if above_ma20
+              puts "#{Names.get_name(code)}(#{code}) #{kcode} #{time_str} at #{last['close']} above_ma20=#{above_ma20.to_s}"
+            else
+              puts "#{Names.get_name(code)}(#{code}) #{kcode} #{time_str} at #{last['close']} close< ma20 SELL OUT!!!!!"
+            end
+           end
         end
       #end
 end
@@ -279,6 +303,7 @@ def print_help
     puts "-n  [code] [start_date] [end_date] [kcode]"
     puts "-c  check market state" 
     puts "-p [kcode]  check portfilo for given kcode" 
+    puts "-m [kcode]  check portfilo price and ma20 for given kcode" 
     puts "-z [code] [kcode]  check code kcode" 
     puts "-h              This help"    
 end
@@ -380,6 +405,32 @@ end
 
       # sleep(60)
       # end
+    end
+
+     if ele == '-m'
+      #  db_name = "name.db"
+      # connect_db(db_name)
+      kcode = ARGV[ARGV.index(ele)+1]
+      kcode = '15' if kcode==nil
+
+      peroid = kcode.to_i*60
+
+      #peroid = 3600 if kcode == 'D'
+      #peroid = 3600 if kcode == 'W'
+      peroid = 3600 if peroid == 0
+
+      last_t= Time.now
+      check_portfilo(kcode,true)
+      while true
+        t = Time.now
+        if (t-last_t) > peroid
+          last_t = t
+          check_portfilo(kcode)
+          #last_t = t
+        end
+
+      sleep(60)
+      end
     end
 
      if ele == '-z'

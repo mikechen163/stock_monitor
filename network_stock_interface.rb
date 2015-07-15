@@ -263,6 +263,7 @@ end
    return total/dv
   end
 
+  
   def get_sound(peroid,direction,code,price)
     action = "买入"
     action = "卖出" if direction == :sell 
