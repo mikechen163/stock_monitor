@@ -265,7 +265,7 @@ def check_portfilo(kcode,monitor_ma20=false)
           #
           if not monitor_ma20
             action,date,price,roe = show_history(ta,false,false,true)
-            puts "#{Names.get_name(code)}(#{code}) #{kcode} last_action=#{action.to_s} on #{date.to_s} at #{price} roe=#{format_eroe(roe)}%, above_ma20=#{above_ma20.to_s}"
+            puts "#{Names.get_name(code)}(#{code}) #{kcode} last_action=#{action.to_s} on #{date.to_s} at #{price} roe=#{format_roe(roe)}%, above_ma20=#{above_ma20.to_s}"
           else
             if above_ma20
               puts "#{Names.get_name(code)}(#{code}) #{kcode} #{time_str} at #{last['close']} above_ma20=#{above_ma20.to_s}"
@@ -425,7 +425,7 @@ end
         t = Time.now
         if (t-last_t) > peroid
           last_t = t
-          check_portfilo(kcode)
+          check_portfilo(kcode,true)
           #last_t = t
         end
 
