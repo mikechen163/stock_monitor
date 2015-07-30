@@ -238,7 +238,7 @@ def check_portfilo(kcode,monitor_ma20=false)
 
       if monitor_ma20
         #start_date = (Time.now.to_date-10).to_s
-        start_date = today
+        start_date = (Time.now.to_date-1).to_s
       end
       #kcode_list = ['60']
 
@@ -255,7 +255,7 @@ def check_portfilo(kcode,monitor_ma20=false)
           last=(ta.to_a)[ta.length-1][1]
           date= (ta.to_a)[ta.length-1][0][0..9]
           time_str = (ta.to_a)[ta.length-1][0]
-          next if date != today #skip is today have no data
+          #next if date != today #skip is today have no data
          # p last
           above_ma20=false
           above_ma20 = true if last['ma20'] < last['close']

@@ -176,6 +176,7 @@ end
         end
         #if (t-last_t)>=seconds
          # last_t = t
+         if (t.wday>=1) and (t.wday<=5)
 
           if ((t>=t2) and (t<=t3)) or ((t>=t4) and (t<=t5))
            #if true
@@ -210,7 +211,7 @@ end
             trading_time_flag = false
             #puts "#{t.strftime("%y-%m-%d %H:%M:%S")} not on trading .."
           end
-        #end
+        end
 
 
         sleep(1)
